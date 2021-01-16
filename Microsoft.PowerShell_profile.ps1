@@ -26,6 +26,7 @@ function Get-Status {
     # 0 -> All up to date
     # 1 -> Changes to tracked file(s) not staged
     # 2 -> Some stages changed, but not committed
+    # 3 -> Not a git repo (see Find-Closest-Git)
     $status = 0
     if (git --git-dir $dir diff --name-only) {
         $status = 1
@@ -45,7 +46,9 @@ function Find-Closest-Git {
 
         if ($loc) {
             if (Test-Path $gitquery) {
-                return Get-Branch($gitquery)
+                $branch = Get-Branch($gitquery)
+                $status = Get-Status($gitquery)
+                return $branch, $status
             }
             else {
                 $par = Split-Path -Parent $loc
@@ -53,7 +56,7 @@ function Find-Closest-Git {
             }
         } 
     } catch {
-        return "(.)"
+        return "(.)", 3
     }
 }
 
@@ -70,5 +73,7 @@ function Prompt {
     $loc = (Get-Location)
     $d = Short-Dir-Return($loc)
     $g = Find-Closest-Git($loc)
-    "$d $g > "
+    $b = $g[0]
+    $s = $g[1]
+    "$d $b $s > "
 }
