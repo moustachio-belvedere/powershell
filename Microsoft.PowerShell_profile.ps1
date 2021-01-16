@@ -11,9 +11,9 @@ function putbranch {
         }
     } catch {
         # we'll end up here if we're in a newly initiated git repo
-        $branch = "(no branches)"
+        $branch = "no branches"
     }
-    Write-Host "($branch) " -NoNewLine
+    return "($branch)"
 }
 
 function findclosestgit {
@@ -23,12 +23,15 @@ function findclosestgit {
     $gitquery = Join-Path -Path $loc -ChildPath ".git"
     if ($loc) {
         if (Test-Path $gitquery) {
-            putbranch($gitquery)
+            return putbranch($gitquery)
         }
         else {
             $par = Split-Path -Parent $loc
             findclosestgit($par)
         }
+    } 
+    else {
+        return "(.)"
     }
 }
 
@@ -38,12 +41,12 @@ function shorteneddir {
     if ($p.length -gt 3) {
       $p = $p.Substring(0,3)
     }
-    Write-Host "$p " -NoNewLine
+    return $p
 }
 
-function prompt {
+function Prompt {
     $loc = (Get-Location)
-    shorteneddir($loc)
-    findclosestgit($loc)
-    return "> "
+    $d = shorteneddir($loc)
+    $g = findclosestgit($loc)
+    "$d $g > "
 }
