@@ -20,17 +20,19 @@ function findclosestgit {
     Param($loc)
     # function climbs dir structure
     # until it finds a git repo
-    $gitquery = Join-Path -Path $loc -ChildPath ".git"
-    if ($loc) {
-        if (Test-Path $gitquery) {
-            return putbranch($gitquery)
-        }
-        else {
-            $par = Split-Path -Parent $loc
-            findclosestgit($par)
-        }
-    } 
-    else {
+    try {
+        $gitquery = Join-Path -Path $loc -ChildPath ".git"
+
+        if ($loc) {
+            if (Test-Path $gitquery) {
+                return putbranch($gitquery)
+            }
+            else {
+                $par = Split-Path -Parent $loc
+                findclosestgit($par)
+            }
+        } 
+    } catch {
         return "(.)"
     }
 }
