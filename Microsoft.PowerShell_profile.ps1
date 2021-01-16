@@ -1,4 +1,4 @@
-function putbranch {
+function Get-Branch {
     Param($dir)
     # modified from:
     # https://stackoverflow.com/a/44411205/2665020
@@ -16,7 +16,19 @@ function putbranch {
     return "($branch)"
 }
 
-function findclosestgit {
+function Get-Status {
+    Param($dir)
+    # Doesn't notify if there are untracked
+    # files (not in .gitignore). This could be added
+    # later using:
+    # `git ls-files . --exclude-standard --others`
+    #
+    # 0 -> All up to date
+    # 1 -> Changes to tracked file(s) not staged
+    # 2 -> Some stages changed, but not committed
+}
+
+function Find-Closest-Git {
     Param($loc)
     # function climbs dir structure
     # until it finds a git repo
@@ -25,11 +37,11 @@ function findclosestgit {
 
         if ($loc) {
             if (Test-Path $gitquery) {
-                return putbranch($gitquery)
+                return Get-Branch($gitquery)
             }
             else {
                 $par = Split-Path -Parent $loc
-                findclosestgit($par)
+                Find-Closest-Git($par)
             }
         } 
     } catch {
@@ -37,7 +49,7 @@ function findclosestgit {
     }
 }
 
-function shorteneddir {
+function Short-Dir-Return {
     Param($loc)
     $p = Split-Path -leaf -path $loc
     if ($p.length -gt 3) {
@@ -48,7 +60,7 @@ function shorteneddir {
 
 function Prompt {
     $loc = (Get-Location)
-    $d = shorteneddir($loc)
-    $g = findclosestgit($loc)
+    $d = Short-Dir-Return($loc)
+    $g = Find-Closest-Git($loc)
     "$d $g > "
 }
