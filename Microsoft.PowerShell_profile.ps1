@@ -20,7 +20,7 @@ function Get-Status {
     Param($dir)
     # Doesn't notify if there are untracked
     # files (not in .gitignore). This could be added
-    # later using:
+    # later using below with a background color:
     # `git ls-files . --exclude-standard --others`
     #
     # 0 -> All up to date
@@ -70,10 +70,13 @@ function Short-Dir-Return {
 }
 
 function Prompt {
+    # fgreen, fyellow, fred, fnone
+    $fcolors = "[32m", "[33m", "[31m", "[39m"
     $loc = (Get-Location)
-    $d = Short-Dir-Return($loc)
-    $g = Find-Closest-Git($loc)
-    $b = $g[0]
-    $s = $g[1]
-    "$d $b $s > "
+    $dir = Short-Dir-Return($loc)
+    $git = Find-Closest-Git($loc)
+    $branch = $git[0]
+    $status = $git[1]
+    $fcol = $fcolors[$status]
+    "$dir $([char]27)$fcol$branch$([char]27)[39m > "
 }
