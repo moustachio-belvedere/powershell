@@ -1,4 +1,6 @@
 function getbranch() {
+    # modified from:
+    # https://stackoverflow.com/a/44411205/2665020
     try {
         $branch = git rev-parse --abbrev-ref HEAD
 
@@ -10,7 +12,13 @@ function getbranch() {
         # we'll end up here if we're in a newly initiated git repo
         $branch = "(no branches)"
     }
-    return "($branch)"
+    return " ($branch)"
+}
+
+function findclosestgit() {
+    # function climbs dir structure
+    # until it finds a git repo
+
 }
 
 function prompt {
@@ -18,7 +26,8 @@ function prompt {
     if ($p.length -gt 3) {
       $p = $p.Substring(0,3)
     }
-
+    Write-Host $p -NoNewLine
+        
     if (Test-Path .git) {
         $branch = getbranch
         $out = "$p $branch"
@@ -27,5 +36,5 @@ function prompt {
         $out = $p 
     }
 
-    return "$out > "
+    return " > "
 }
