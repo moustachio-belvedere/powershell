@@ -71,7 +71,7 @@ function Short-Dir-Return {
 
 function Prompt {
     # fgreen, fyellow, fred, fnone
-    $fcolors = "[32m", "[33m", "[31m", "[39m"
+    $fcolors = "[32m", "[31m", "[33m", "[39m"
     $loc = (Get-Location)
     $dir = Short-Dir-Return($loc)
     $git = Find-Closest-Git($loc)
