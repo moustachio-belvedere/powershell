@@ -26,6 +26,14 @@ function Get-Status {
     # 0 -> All up to date
     # 1 -> Changes to tracked file(s) not staged
     # 2 -> Some stages changed, but not committed
+    $status = 0
+    if (git --git-dir $dir diff --name-only) {
+        $status = 1
+    }
+    elseif (git --git-dir $dir diff --staged --name-only) {
+        $status = 2
+    }
+    return $status
 }
 
 function Find-Closest-Git {
