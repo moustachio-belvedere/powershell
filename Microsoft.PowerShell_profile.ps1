@@ -3,11 +3,11 @@ function Get-Branch {
     # modified from:
     # https://stackoverflow.com/a/44411205/2665020
     try {
-        $branch = git --git-dir $dir rev-parse --abbrev-ref HEAD
+        $branch = git -C $dir rev-parse --abbrev-ref HEAD
 
         if ($branch -eq "HEAD") {
             # we're probably in detached HEAD state, so print the SHA
-            $branch = git --git-dir $dir rev-parse --short HEAD
+            $branch = git -C $dir rev-parse --short HEAD
         }
     } catch {
         # we'll end up here if we're in a newly initiated git repo
@@ -28,10 +28,10 @@ function Get-Status {
     # 2 -> Some stages changed, but not committed
     # 3 -> Not a git repo (see Find-Closest-Git)
     $status = 0
-    if (git --git-dir $dir diff --name-only) {
+    if (git -C $dir diff --name-only) {
         $status = 1
     }
-    elseif (git --git-dir $dir diff --staged --name-only) {
+    elseif (git -C $dir diff --staged --name-only) {
         $status = 2
     }
     return $status
@@ -41,21 +41,18 @@ function Find-Closest-Git {
     Param($loc)
     # function climbs dir structure
     # until it finds a git repo
-    try {
-        $gitquery = Join-Path -Path $loc -ChildPath ".git"
-
-        if ($loc) {
-            if (Test-Path $gitquery) {
-                $branch = Get-Branch($gitquery)
-                $status = Get-Status($gitquery)
+    if ($loc) {
+            $tloc = Join-Path -Path $loc -Child ".git"
+            if (Test-Path $tloc) {
+                $branch = Get-Branch($loc)
+                $status = Get-Status($loc)
                 return $branch, $status
             }
             else {
                 $par = Split-Path -Parent $loc
                 Find-Closest-Git($par)
             }
-        } 
-    } catch {
+    } else {
         return "(.)", 3
     }
 }
