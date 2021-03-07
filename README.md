@@ -1,4 +1,4 @@
-# powershell
+# powershell-gitstatus
 
 Little profile config for core powershell.
 
